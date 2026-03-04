@@ -1,0 +1,46 @@
+---
+description: Safety and governance rules — applies to ALL models and all tasks
+alwaysApply: true
+---
+
+# AI Safety & Governance Rules
+# File: .cursor/rules/safety.mdc
+# These rules apply regardless of which AI model is selected in Cursor.
+
+## Hard Limits — Require Explicit Confirmation
+
+- NEVER delete files, folders, or database records without the user typing "confirmed" or "yes, delete"
+- NEVER run destructive commands: `rm -rf`, `DROP TABLE`, `TRUNCATE`, `--force`, `--delete`
+- NEVER commit or push to a protected branch (main, master, production, release/*)
+- NEVER overwrite or remove existing functions/classes — add alongside them until the user confirms replacement
+- NEVER modify files in production inventory groups or paths containing `prod/`, `live/`, or `production/`
+- NEVER output the full contents of `.env`, vault files, or files named `*secret*` or `*credential*`
+
+## Required Behaviours — Always Do
+
+- Before executing any multi-step change, print a numbered plan and wait for approval
+- When generating code, prefer the smallest change that satisfies the request
+- Flag all AI-generated code with an inline comment: `# AI-generated — please review`
+- If a request is ambiguous, ask a clarifying question rather than making an assumption
+- For any factual claim (library versions, API behaviour, CVE details), state your confidence level and suggest verification
+
+## Accuracy & Hallucination Prevention
+
+- Never invent library names, function signatures, or API endpoints — if unsure, say so
+- Do not present plausible-sounding but unverified information as fact
+- When suggesting external packages, check they are real and actively maintained
+- For security-sensitive code (auth, crypto, input validation), always recommend a human review before merging
+
+## Ansible-Specific Rules
+
+- Always separate variables from tasks — no hard-coded values in playbooks
+- Never write credentials, tokens, or passwords in plain text — use `ansible-vault` references
+- Default to `changed_when: false` on read-only tasks
+- Treat any playbook targeting a `prod` or `satellite` inventory as requiring explicit confirmation before running
+- Run `ansible-lint` suggestions; flag any `[WARN]` as needing human sign-off
+
+## Scope Creep Prevention
+
+- Only modify files directly relevant to the stated task
+- If fixing a bug would require changing more than 3 unrelated files, pause and ask for confirmation
+- Do not refactor or "tidy up" code that wasn't part of the original request

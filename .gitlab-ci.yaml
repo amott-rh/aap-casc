@@ -1,0 +1,39 @@
+stages:
+  - lint
+  - ai-review
+  - test
+
+ansible-lint:
+  stage: lint
+  image: quay.io/ansible/creator-ee:latest
+  script:
+    - ansible-lint --profile=production
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+ai-commit-policy:
+  stage: ai-review
+  script:
+    - |
+      # Check if any commits in this MR are AI-assisted
+      AI_COMMITS=$(git log origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME..HEAD --oneline | grep -i '\[ai-assisted\]' || true)
+      if [ -n "$AI_COMMITS" ]; then
+        echo "AI-assisted commits found:"
+        echo "$AI_COMMITS"
+        echo "Enforcing extended review policy..."
+        # Set a CI variable or label via API to require additional approval
+        curl --request POST \
+          --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" \
+          "$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/labels" \
+          --data "labels=ai-review-required"
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+smoke-test:
+  stage: test
+  script:
+    - ansible-playbook --syntax-check site.yml
+    - molecule test --scenario-name default
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

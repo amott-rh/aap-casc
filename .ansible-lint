@@ -1,0 +1,18 @@
+rulesdir:
+  - ./rules
+
+warn_list: []
+
+skip_list:
+  - yaml[line-length]  # handled by yamllint
+  - name[missing]      # remove this once you're stricter
+
+# Treat these as errors, not warnings (common AI output problems)
+strict: true
+
+# Profile for AI-code-heavy repos
+profile: production
+
+exclude_paths:
+  - .cache/
+  - molecule/

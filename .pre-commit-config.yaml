@@ -1,0 +1,29 @@
+repos:
+  # Standard Ansible quality gates
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.2.0
+    hooks:
+      - id: ansible-lint
+        args: ['--profile=production']
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ['-d', '{extends: default, rules: {line-length: {max: 120}}}']
+
+  # Commit message enforcement
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  # Custom hook: flag AI-assisted commits for review
+  - repo: local
+    hooks:
+      - id: ai-commit-reviewer
+        name: AI Assisted Commit Check
+        entry: scripts/check_ai_commit.sh
+        language: script
+        stages: [commit-msg]
