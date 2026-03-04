@@ -1,16 +1,17 @@
+---
 repos:
   # Standard Ansible quality gates
   - repo: https://github.com/ansible/ansible-lint
     rev: v24.2.0
     hooks:
       - id: ansible-lint
-        args: ['--profile=production']
+        args: ["--profile=production"]
 
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
     hooks:
       - id: yamllint
-        args: ['-d', '{extends: default, rules: {line-length: {max: 120}}}']
+        args: ["-d", "{extends: default, rules: {line-length: {max: 120}}}"]
 
   # Commit message enforcement
   - repo: https://github.com/compilerla/conventional-pre-commit

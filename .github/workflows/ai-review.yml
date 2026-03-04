@@ -1,3 +1,4 @@
+---
 name: AI Commit Review
 
 on:
@@ -5,20 +6,19 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
-
 jobs:
   ai-commit-policy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed to read full commit history
+          fetch-depth: 0 # needed to read full commit history
 
       - name: Check for AI-assisted commits
         id: ai-check
         run: |
           AI_COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --oneline 2>/dev/null | grep -i '\[ai-assisted\]' || true)
-          
+
           if [ -n "$AI_COMMITS" ]; then
             echo "ai_detected=true" >> $GITHUB_OUTPUT
             echo "AI-assisted commits found:"
@@ -73,6 +73,6 @@ jobs:
         run: pip install ansible --break-system-packages
 
       - name: Syntax check
-        run: |
+        run: |-
           find . -name "*.yml" -path "*/playbooks/*" | \
             xargs -I{} ansible-playbook --syntax-check {}

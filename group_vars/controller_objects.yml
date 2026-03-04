@@ -1,3 +1,4 @@
+---
 controller_organizations:
   - name: MyOrg
     description: "Primary org"
