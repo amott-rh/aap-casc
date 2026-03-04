@@ -3,9 +3,9 @@ name: AI Commit Review
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, development, dev]
   pull_request:
-    branches: [main, develop]
+    branches: [main, development, dev]
 jobs:
   ai-commit-policy:
     runs-on: ubuntu-latest

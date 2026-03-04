@@ -25,6 +25,7 @@
 - When refactoring, keep the original code commented out until the replacement is confirmed working
 - For Ansible: follow Red Hat best practices  separate vars from tasks, use `ansible-lint`, do not hard-code credentials
 - Tag all AI-generated code blocks with a comment: `# AI-generated  review before merging`
+- Tag all commits with `[ai-assisted]`
 - If asked to do something that conflicts with these rules, explain the conflict and suggest a safer alternative
 
 ## ENVIRONMENT AWARENESS
