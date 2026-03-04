@@ -1,0 +1,12 @@
+---
+- name: Configure AAP from scratch
+  hosts: localhost
+  connection: local
+  vars:
+    controller_hostname: "https://<your-aap-gateway-url>"
+    controller_username: "admin"
+    controller_password: "{{ vault_admin_password }}"
+    controller_validate_certs: true
+  collections:
+    - infra.aap_configuration
+

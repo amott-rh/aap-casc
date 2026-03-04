@@ -1,0 +1,78 @@
+name: AI Commit Review
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ai-commit-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # needed to read full commit history
+
+      - name: Check for AI-assisted commits
+        id: ai-check
+        run: |
+          AI_COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --oneline 2>/dev/null | grep -i '\[ai-assisted\]' || true)
+          
+          if [ -n "$AI_COMMITS" ]; then
+            echo "ai_detected=true" >> $GITHUB_OUTPUT
+            echo "AI-assisted commits found:"
+            echo "$AI_COMMITS"
+          else
+            echo "ai_detected=false" >> $GITHUB_OUTPUT
+            echo "No AI-assisted commits detected."
+          fi
+
+      - name: Scan for Ansible AI antipatterns
+        if: steps.ai-check.outputs.ai_detected == 'true'
+        run: |
+          FAILED=0
+
+          if grep -rn "ignore_errors: true" --include="*.yml" --exclude-dir=".gitea" .; then
+            echo "FAIL: 'ignore_errors: true' found - requires justification comment"
+            FAILED=1
+          fi
+
+          if grep -rn "when: true" --include="*.yml" --exclude-dir=".gitea" .; then
+            echo "WARNING: Redundant 'when: true' found - common AI output"
+          fi
+
+          if grep -rn "shell:" --include="*.yml" --exclude-dir=".gitea" . | grep -v "# ai-approved"; then
+            echo "WARNING: 'shell:' module usage found - verify this wasn't generated without review"
+          fi
+
+          if [ $FAILED -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Require ticket reference on AI commits
+        if: steps.ai-check.outputs.ai_detected == 'true'
+        run: |
+          MISSING_REF=$(git log origin/${{ github.base_ref }}..HEAD --format="%H %s%b" 2>/dev/null | \
+            grep -i '\[ai-assisted\]' | \
+            grep -vE '(Refs|Fixes|Closes)[[:space:]]#[0-9]+' || true)
+
+          if [ -n "$MISSING_REF" ]; then
+            echo "FAIL: AI-assisted commits must reference a ticket (e.g., Refs #123)"
+            echo "$MISSING_REF"
+            exit 1
+          fi
+
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: ai-commit-policy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: pip install ansible --break-system-packages
+
+      - name: Syntax check
+        run: |
+          find . -name "*.yml" -path "*/playbooks/*" | \
+            xargs -I{} ansible-playbook --syntax-check {}

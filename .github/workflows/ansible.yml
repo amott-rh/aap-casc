@@ -1,0 +1,13 @@
+name: Ansible CI
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: pip install ansible-lint yamllint --break-system-packages
+      - name: YAML lint
+        run: yamllint .
+      - name: Ansible lint
+        run: ansible-lint

@@ -1,0 +1,32 @@
+controller_organizations:
+  - name: MyOrg
+    description: "Primary org"
+
+controller_credentials:
+  - name: Azure Service Principal
+    organization: MyOrg
+    credential_type: Microsoft Azure Resource Manager
+    inputs:
+      subscription: "{{ azure_subscription_id }}"
+      client: "{{ azure_client_id }}"
+      secret: "{{ azure_client_secret }}"
+      tenant: "{{ azure_tenant_id }}"
+
+controller_inventories:
+  - name: Azure Dynamic Inventory
+    organization: MyOrg
+
+controller_projects:
+  - name: My Automation Project
+    organization: MyOrg
+    scm_type: git
+    scm_url: "https://github.com/myorg/my-playbooks.git"
+    scm_branch: main
+
+controller_job_templates:
+  - name: Configure Servers
+    organization: MyOrg
+    project: My Automation Project
+    playbook: site.yml
+    inventory: Azure Dynamic Inventory
+    ask_variables_on_launch: true
