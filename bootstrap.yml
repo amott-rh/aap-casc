@@ -9,4 +9,3 @@
     controller_validate_certs: true
   collections:
     - infra.aap_configuration
-
