@@ -1,0 +1,20 @@
+---
+# AI-generated — review before merging
+# Docs: https://github.com/redhat-cop/aap_configuration/tree/devel/roles/job_templates
+controller_job_templates:
+  - name: "<your-job-template-name>"
+    organization: "<your-org-name>"
+    project: "<your-project-name>"
+    playbook: "site.yml"
+    inventory: "Azure Dynamic Inventory"
+    credentials:
+      - "Linux Machine Credential"
+    ask_variables_on_launch: false
+    ask_limit_on_launch: true
+    # extra_vars:
+    #   my_var: my_value
+    # job_type: run          # run | check
+    # verbosity: 0           # 0-5
+    # concurrent_jobs_enabled: false
+    # become_enabled: false
+    # default_environment: "<execution-environment-name>"

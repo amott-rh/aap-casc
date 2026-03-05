@@ -1,0 +1,17 @@
+---
+# AI-generated — review before merging
+collections:
+  - name: infra.aap_configuration
+    version: ">=2.0.0"
+
+  # Required by infra.aap_configuration
+  - name: ansible.controller
+    version: ">=4.4.0"
+
+  # Required for Azure dynamic inventory
+  - name: azure.azcollection
+    version: ">=2.0.0"
+
+  # Useful utilities (base64, json_query, etc.)
+  - name: ansible.utils
+    version: ">=2.0.0"

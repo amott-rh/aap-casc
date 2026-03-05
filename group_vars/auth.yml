@@ -1,0 +1,20 @@
+---
+# AI-generated — review before merging
+# Connection details for the AAP Gateway.
+# Sensitive values (vault_admin_password, tokens) must be stored in an
+# Ansible Vault file and never committed in plaintext.
+
+# URL of the AAP Gateway (no trailing slash)
+aap_gateway_url: "https://<your-aap-gateway-fqdn>"
+
+# Set to false only in lab/dev environments with self-signed certs
+aap_validate_certs: true
+
+# Admin username — override per environment if needed
+aap_admin_username: "admin"
+
+# Vault-encrypted password — define this in a separate encrypted vars file:
+#   ansible-vault create group_vars/vault.yml
+# Then add:  vault_admin_password: "MyP@ssw0rd"
+# And reference that file in bootstrap.yml vars_files, or pass with:
+#   ansible-playbook bootstrap.yml --ask-vault-pass

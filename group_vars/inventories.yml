@@ -1,0 +1,32 @@
+---
+# AI-generated — review before merging
+# Docs: https://github.com/redhat-cop/aap_configuration/tree/devel/roles/inventories
+#       https://github.com/redhat-cop/aap_configuration/tree/devel/roles/inventory_sources
+
+controller_inventories:
+  # --- Azure dynamic inventory ---
+  - name: "Azure Dynamic Inventory"
+    organization: "<your-org-name>"
+    description: "Azure hosts via dynamic inventory plugin"
+    # variables:
+    #   ansible_connection: winrm     # example host-level default
+
+  # --- Static inventory (optional fallback or infra hosts) ---
+  # - name: "Static Inventory"
+  #   organization: "<your-org-name>"
+
+controller_inventory_sources:
+  # --- Azure Resource Manager source ---
+  - name: "Azure Source"
+    inventory: "Azure Dynamic Inventory"
+    organization: "<your-org-name>"
+    source: azure_rm
+    credential: "Azure Service Principal"
+    overwrite: true
+    update_on_launch: true
+    # source_vars:
+    #   include_vm_resource_groups:
+    #     - "<resource-group-name>"
+    #   keyed_groups:
+    #     - prefix: tag
+    #       key: tags

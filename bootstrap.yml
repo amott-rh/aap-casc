@@ -1,11 +1,93 @@
 ---
+# AI-generated — review before merging
 - name: Configure AAP from scratch
   hosts: localhost
   connection: local
+  gather_facts: false
+
+  vars_files:
+    - group_vars/auth.yml
+    - group_vars/organizations.yml
+    - group_vars/credentials.yml
+    - group_vars/projects.yml
+    - group_vars/inventories.yml
+    - group_vars/job_templates.yml
+
   vars:
-    controller_hostname: "https://<your-aap-gateway-url>"
-    controller_username: "admin"
+    controller_hostname: "{{ aap_gateway_url }}"
+    controller_username: "{{ aap_admin_username | default('admin') }}"
     controller_password: "{{ vault_admin_password }}"
-    controller_validate_certs: true
-  collections:
-    - infra.aap_configuration
+    controller_validate_certs: "{{ aap_validate_certs | default(true) }}"
+
+  tasks:
+    # --- 1. Organizations (everything else belongs to an org) ---
+    - name: Configure organizations
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.organizations
+      when: controller_organizations is defined
+
+    # --- 2. Custom credential types (must exist before credentials) ---
+    - name: Configure credential types
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.credential_types
+      when: controller_credential_types is defined
+
+    # --- 3. Credentials (SCM, machine, vault, Azure, etc.) ---
+    - name: Configure credentials
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.credentials
+      when: controller_credentials is defined
+
+    # --- 4. Execution environments (needed by projects and job templates) ---
+    - name: Configure execution environments
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.execution_environments
+      when: controller_execution_environments is defined
+
+    # --- 5. Projects (depend on SCM credentials and EEs) ---
+    - name: Configure projects
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.projects
+      when: controller_projects is defined
+
+    # --- 6. Inventories (depend on orgs) ---
+    - name: Configure inventories
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.inventories
+      when: controller_inventories is defined
+
+    # --- 7. Inventory sources (depend on inventories and credentials) ---
+    - name: Configure inventory sources
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.inventory_sources
+      when: controller_inventory_sources is defined
+
+    # --- 8. Job templates (depend on projects, inventories, credentials) ---
+    - name: Configure job templates
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.job_templates
+      when: controller_job_templates is defined
+
+    # --- 9. Workflow job templates ---
+    - name: Configure workflow job templates
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.workflow_job_templates
+      when: controller_workflow_job_templates is defined
+
+    # --- 10. Users ---
+    - name: Configure users
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.users
+      when: controller_user_accounts is defined
+
+    # --- 11. Teams ---
+    - name: Configure teams
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.teams
+      when: controller_teams is defined
+
+    # --- 12. RBAC role assignments (last — all objects must exist first) ---
+    - name: Configure roles
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.roles
+      when: controller_roles is defined

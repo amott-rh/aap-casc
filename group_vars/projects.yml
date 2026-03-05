@@ -1,0 +1,15 @@
+---
+# AI-generated — review before merging
+# Docs: https://github.com/redhat-cop/aap_configuration/tree/devel/roles/projects
+controller_projects:
+  - name: "<your-project-name>"
+    organization: "<your-org-name>"
+    scm_type: git
+    scm_url: "https://github.com/<org>/<repo>.git"
+    scm_branch: main
+    credential: "SCM Credential"
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_update_on_launch: true
+    # default_environment: "<execution-environment-name>"
+    # description: ""

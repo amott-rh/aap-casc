@@ -1,0 +1,11 @@
+---
+# AI-generated — review before merging
+# Docs: https://github.com/redhat-cop/aap_configuration/tree/devel/roles/organizations
+controller_organizations:
+  - name: "<your-org-name>"
+    description: "Primary organization"
+    # max_hosts: 0                    # 0 = unlimited
+    # default_environment: "Default execution environment"
+    # galaxy_credentials:
+    #   - "Ansible Galaxy"
+    #   - "Automation Hub"
