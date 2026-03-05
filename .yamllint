@@ -1,5 +1,7 @@
 ---
 extends: default
+ignore: |
+  .github/
 rules:
   line-length:
     max: 200
